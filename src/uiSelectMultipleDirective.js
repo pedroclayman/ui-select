@@ -441,9 +441,11 @@ uis.directive('uiSelectMultiple', ['uiSelectMinErr','$timeout', function(uiSelec
       }
 
       $select.searchInput.on('blur', function() {
-        $timeout(function() {
-          $selectMultiple.activeMatchIndex = -1;
-        });
+        if (scope.movingElementInDom !== true) {
+          $timeout(function() {
+            $selectMultiple.activeMatchIndex = -1;
+          });
+        }
       });
 
     }

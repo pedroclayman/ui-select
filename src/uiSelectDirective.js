@@ -236,7 +236,8 @@ uis.directive('uiSelect',
             if (isOpen) {
               positionDropdown();
             } else {
-              resetDropdown();
+              var shouldResetFocusOnInput = (document.activeElement === $select.focusInput[0]);
+              resetDropdown(shouldResetFocusOnInput);
             }
           });
 
@@ -274,14 +275,17 @@ uis.directive('uiSelect',
           element[0].style.width = offset.width + 'px';
         }
 
-        function resetDropdown() {
+        function resetDropdown(resetFocus) {
           if (placeholder === null) {
             // The dropdown has not actually been display yet, so there's nothing to reset
             return;
           }
 
           // Move the dropdown element back to its original location in the DOM
+          scope.movingElementInDom = true;
           placeholder.replaceWith(element);
+          scope.movingElementInDom = false;
+
           placeholder = null;
 
           element[0].style.position = '';
@@ -290,7 +294,9 @@ uis.directive('uiSelect',
           element[0].style.width = originalWidth;
 
           // Set focus back on to the moved element
-          $select.setFocus();
+          if (resetFocus === true) {
+            $select.setFocus();
+          }
         }
 
         // Hold on to a reference to the .ui-select-dropdown element for direction support.
@@ -361,7 +367,7 @@ uis.directive('uiSelect',
         };
 
         var opened = false;
-        
+
         scope.calculateDropdownPos = function() {
           if ($select.open) {
             dropdown = angular.element(element).querySelectorAll('.ui-select-dropdown');
